@@ -1,14 +1,14 @@
-## nv
+## normal & visual模式
 
-### mv
+### 移动
 
-#### cursor
+#### 光标移动
 
-ueni mv 1 char OR one line
+ueni 移动一个字符/一行
 
-C-ueni mv 1 word OR six lines
+C-ueni 移动一个单词/六行
 
-[] head and tail
+[] head 
 
 up/down/left/right:
 
