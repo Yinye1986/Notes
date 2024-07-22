@@ -11,6 +11,7 @@ struct Lnode {
   int data;
   Lnode *next_ptr;
 };
+
 // 第一种初始化方式：先创建,在使用初始化函数为数据域和指针域赋值；另有一种直接返回一个初始化过的头结点，各有各的好处
 void initLinkedlist(Lnode *head_node) { // 单链表的初始化其实就是头结点的初始化
   head_node->data = 0;
