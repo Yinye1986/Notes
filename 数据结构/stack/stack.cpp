@@ -1,18 +1,17 @@
 #include <iostream>
 
-struct Node {
+struct stack {
     int data;
     Node* next;
 };
 
-class LinkedList {
+class Stack {
 public:
-    LinkedList() : head(new Node{1,nullptr}) {}
+    LinkedList() : head(nullptr) {}            // head是一个指针
 
     void addAtHead(int value) {
-        Node* newNode = new Node{value, head->next}; // newNode指向原首元结点        
-        head->next = newNode;                        // head指向newNode
-        head->data++;
+        Node* newNode = new Node{value, head}; // newNode指向head所指向的
+        head = newNode;                        // head指向newNode
     }
 
     void delAtHead() {}
@@ -21,8 +20,7 @@ public:
         Node* newNode = new Node{value, nullptr};
         // 1. 如果空,直接head指向newNode
         if(head == nullptr) {
-            head->next = newNode;
-            head->data++;
+            head = newNode;
             return;
         }
         // 2. 如果不空,则遍历链表到最后一个,在将最后的指向newNode
@@ -30,28 +28,44 @@ public:
         while(temp->next != nullptr) { // 如果temp不等于nullptr(即不是尾)
             temp = temp->next;         // 则迭代遍历下一个
         }
-        temp->next = newNode;
-        head->data++;
+        temp->next = newNode;          // 此时temp是尾,让其指向新结点即可
     }
 
-    void insert_atAnywhere(int value, int a) {
+    void insert_atAnywhere(int value, int n) {
         Node* newNode = new Node{value, nullptr};
-        if(a<0) return;
-        if(a==1) {
-            newNode->next = head->next;
-            head->next = newNode;
-            head->data++;
+        if(n<0) return;
+        if(n==1) {
+            newNode->next = head;
+            head = newNode;
+            return;
         }
         // 1. 迭代遍历到n
-        int n = 1;
-        Node* temp = head;
-        
-        while (n < a) {
-            temp = temp->next;
-            n++;
+        int a = 1;
+        Node* temp = head;     // 此时temp初始化为Node1
+        while (a < n-1) {
+            temp = temp->next; // 第1次结束,temp指向3,a=1;
+            a++;
         }
+        // n-1轮,temp指向n
+        newNode->next = temp->next;
         temp->next = newNode;
-        head->data++;
+    }
+
+    void reverse_byIterativeMethod() {
+        Node *prev,*current,*next;
+        prev = nullptr;
+        current = head;
+        while (current->next != nullptr) {
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
+        }
+        current->next= prev;
+        head = current;
+    }
+
+    Node reverse_byRecursiveMethod(Node head) {
     }
 
     void print() {
@@ -144,13 +158,13 @@ int main() {
                 break;
 
             case 7:
-                std::cout << "链表中的节点个数是: " << list.countNodes() << std::endl;
+                std::cout << "已反转";
+                list.reverse_byIterativeMethod();
                 break;
 
             case 8:
-                std::cout << "请输入要添加到链表尾部的值:";
-                std::cin >> value;
-                list.addAtTail(value);
+                std::cout << "已反转";
+                list.head = list.reverse_byRecursiveMethod(head);
                 break;
 
             case 9:
