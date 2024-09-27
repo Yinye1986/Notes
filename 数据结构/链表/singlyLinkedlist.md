@@ -1,4 +1,4 @@
-# linked list
+# 链表
 
 ## 简介
 
