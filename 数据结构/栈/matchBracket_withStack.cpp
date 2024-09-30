@@ -68,8 +68,7 @@ bool StackClass::isMatching(std::string &str) {
         return false;
       }
       char top = getTop();
-      if (c == ')' && top != '(' || c == ']' && top != '[' ||
-          c == '}' && top != '{' || c == '>' && top != '<') {
+      if (c == ')' && top != '(' || c == ']' && top != '[' || c == '}' && top != '{' || c == '>' && top != '<') {
         return false;
       }
       pop();
