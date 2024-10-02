@@ -15,9 +15,10 @@ public:
   int count();
   void reverseStr(std::string &str);
 
-private:
   int top = -1;
   char arr[__MAX_SIZE__];
+
+private:
 };
 
 StackClass::StackClass() {}
@@ -74,8 +75,59 @@ void StackClass::reverseStr(std::string &str) {
 }
 
 std::string getPostfixExpr(std::string expr) {
-  StackClass operato;
-  StackClass postfixExpr;
+  class operat : public StackClass {
+  public:
+    void push(char val) {
+      try {
+        if (top >= __MAX_SIZE__ - 1) {
+          throw std::runtime_error("Stack is overflow!");
+        } else {
+          arr[++top] = val;
+        }
+      } catch (const std::runtime_error &e) {
+        std::cerr << "operator类捕获到异常:" << e.what() << std::endl;
+      }
+    }
+    void pop() {
+      try {
+        if (top == -1) {
+          throw std::runtime_error("stack is empty");
+        } else {
+          top--;
+        }
+      } catch (const std::runtime_error &e) {
+        std::cerr << "operator类捕获到异常:" << e.what() << std::endl;
+      }
+    };
+  };
+  class postfixExpr : public StackClass {
+  public:
+    void push(char val) {
+      try {
+        if (top >= __MAX_SIZE__ - 1) {
+          throw std::runtime_error("Stack is overflow!");
+        } else {
+          arr[++top] = val;
+        }
+      } catch (const std::runtime_error &e) {
+        std::cerr << "postfixExpr类捕获到异常:" << e.what() << std::endl;
+      }
+    }
+    void pop() {
+      try {
+        if (top == -1) {
+          throw std::runtime_error("stack is empty");
+        } else {
+          top--;
+        }
+      } catch (const std::runtime_error &e) {
+        std::cerr << "postfixExpr类捕获到异常:" << e.what() << std::endl;
+      }
+    };
+  };
+
+  operat operato;
+  postfixExpr postfixExpr;
   StackClass rev;
   for (char c : expr) {
     if (c != '*' && c != '/' && c != '-' && c != '+' && c != '(' && c != ')') {
@@ -100,7 +152,7 @@ std::string getPostfixExpr(std::string expr) {
         operato.pop();
         operato.push(c);
       } else if (c == '+' || c == '-') {
-        while (operato.getTop() != '(') {
+        while ((operato.getTop() != '(') && (operato.isEmpty() == false)) {
           postfixExpr.push(operato.getTop());
           operato.pop();
         }
