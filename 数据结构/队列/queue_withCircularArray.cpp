@@ -25,10 +25,11 @@ void Queue::enqueue(__TYPE__ arg) {
   if (isFull())
     return;
   if (isEmpty()) {
-    arr[++rear] = arg;
+    arr[rear++] = arg;
     front++;
   } else {
-    arr[++rear] = arg;
+    arr[rear + 1] = arg;
+    rear = (rear + 1) % __SIZE__;
   }
 }
 
@@ -43,8 +44,24 @@ void Queue::dequeue() {
   front++;
 }
 
+__TYPE__ Queue::getFront() {
+  if (isEmpty()) {
+    std::cout << "Queue is empty";
+  } else {
+    return arr[front];
+  }
+}
+
+__TYPE__ Queue::getRear() {
+  if (isEmpty()) {
+    std::cout << "Queue is empty";
+  } else {
+    return arr[rear];
+  }
+}
+
 bool Queue::isEmpty() {
-  if (front == -1 && rear == -1) {
+  if (front == rear) {
     return true;
   } else {
     return false;
@@ -83,6 +100,5 @@ int main() {
   q.enqueue(7);
   q.dequeue();
   q.print('p');
-  std::cout << std::endl;
   q.print('n');
 }
