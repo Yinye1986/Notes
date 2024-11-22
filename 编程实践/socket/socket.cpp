@@ -59,7 +59,7 @@ bool c_socket::connect(const string &ip, int port) {
 }
 int c_socket::accept() {
   int connectFd = ::accept(m_socketFd, NULL, NULL);
-  m_socketFd = connectFd;
+  m_connectFd = connectFd;
   if (connectFd < 0) {
     error("socket accept error: errno=%d, errmsg=%s", errno, strerror(errno));
     return false;
@@ -78,5 +78,9 @@ void c_socket::close() {
   if (m_socketFd > 0) {
     ::close(m_socketFd);
     m_socketFd = 0;
+  }
+  if (m_connectFd > 0) {
+    ::close(m_connectFd);
+    m_connectFd = 0;
   }
 }
