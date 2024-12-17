@@ -1,15 +1,13 @@
 [org 0x1000]
 
-dw 0x55aa
+dw 0x55aa; 魔数, 用于判断错误
+; loader读到0x1000开头两个字节为55aa
 
-mov si, str
+xchg bx, bx
+
+mov si, loading
+
 call print
-
-mov edi, 0x1000
-mov ecx, 0; 起始扇区
-mov bl, 1
-
-call readDisk
 
 jmp $
 
@@ -25,4 +23,5 @@ print:
 .done:
     ret
 
-readDisk
+loading:
+    db "Loading Onix...", 10, 13, 0; \n\r

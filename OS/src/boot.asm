@@ -20,10 +20,12 @@ mov bl, 4; 扇区数量
 
 call read_disk
 
+xchg bx,bx
+
 cmp word [0x1000], 0x55aa
 jnz error
 
-jmp 0:0x1008
+jmp 0:0x1002
 
 ; 阻塞
 jmp $
@@ -32,7 +34,7 @@ read_disk:
 
     ; 设置读写扇区的数量
     mov dx, 0x1f2
-    mov al, bl
+    mov al, bl ; bl:要读写的扇区数量
     out dx, al
 
     inc dx; 0x1f3
@@ -51,7 +53,7 @@ read_disk:
 
     inc dx; 0x1f6
     shr ecx, 8
-    and cl, 0b1111; 将高四位置为 0
+    and cl, 0b1111; 将高四位设置为 0
 
     mov al, 0b1110_0000;
     or al, cl
@@ -62,10 +64,11 @@ read_disk:
     out dx, al
 
     xor ecx, ecx; 将 ecx 清空
+    ; 上面这句相较于mov ecx, 0性能更高
     mov cl, bl; 得到读写扇区的数量
 
     .read:
-        push cx; 保存 cx
+        push cx; 保存 cx ; 因为下面的步骤中修改了cx
         call .waits; 等待数据准备完毕
         call .reads; 读取一个扇区
         pop cx; 恢复 cx
@@ -77,11 +80,14 @@ read_disk:
         mov dx, 0x1f7
         .check:
             in al, dx
-            jmp $+2; nop 直接跳转到下一行
-            jmp $+2; 一点点延迟
+            jmp $+2; 直接跳转到下一行
             jmp $+2
+            jmp $+2
+            ; 上面三行起到delay的作用
             and al, 0b1000_1000
+            ; 通过&保留第三位和第七位
             cmp al, 0b0000_1000
+            ; 通过验证第三位是1和第七位是0知晓硬盘数据准备完毕
             jnz .check
         ret
 
@@ -93,11 +99,11 @@ read_disk:
             jmp $+2; 一点点延迟
             jmp $+2
             jmp $+2
-            mov [edi], ax
-            add edi, 2
-            loop .readw
+            mov [edi], ax; edi是目标内存
+            add edi, 2; 每个字占用两字节, 内存地址增2
+            loop .readw; loop会隐式的减少cx
         ret
-
+        ; 这段程序实现读取256个字
 print:
     mov ah, 0x0e
 .next:
