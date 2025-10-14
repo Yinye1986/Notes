@@ -1,0 +1,9 @@
+# Google安卓命令行工具链管理器
+
+需要安装cmdline-tools
+
+```shell
+qmake
+make
+./ASM
+```
