@@ -1,4 +1,6 @@
 from pymodbus.client import ModbusSerialClient
+from pymodbus.pdu.diag_message import GetClearModbusPlusRequest
+from pymodbus.pdu.diag_message import GetClearModbusPlusResponse
 import os
 import time
 
@@ -23,8 +25,11 @@ BAUD_TO_TEST = [
 
 SLAVE_TO_TEST = range(1, 248)
 
-TEM = 0x0001;
-HUM = 0x0000;
+TEM_REALTIME = 0x0001;
+HUM_REALTIME = 0x0000;
+TEM = 0x0050;
+HUM = 0x0051;
+ADDR_REG = 0x07D0;
 
 def scan():
     global FOUND_BAUD
@@ -55,13 +60,15 @@ def scan():
                     FOUND_BAUD = baud
                     FOUND_SLAVE = slave
                     print(f"\n>>>> BAUD: {baud}, SLAVE: {slave}")
-            pass
+                    return
         client.close()
     print("\n--- 扫描结束 ---")
     print("未找到有效参数")
     return
 
 if __name__ == "__main__":
+        FOUND_BAUD = None  # 在全局作用域初始化
+        FOUND_SLAVE = None
         scan()
         if os.name == 'posix':
             os.system('clear')
@@ -89,6 +96,7 @@ if __name__ == "__main__":
                     # 真实值
                     actual_humidity = raw_humidity / 10.0
                     actual_temperature = raw_temperature / 10.0
+                    print(f"Frame: {result.encode()}")
                     print(f"TEM: {actual_temperature:<5}\nHUM: {actual_humidity}", end="\r")
                 else:
                     print("Modbus 读取错误")
