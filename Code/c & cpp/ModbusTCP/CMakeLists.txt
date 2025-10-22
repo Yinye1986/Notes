@@ -15,7 +15,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON) # 开启Position-Independent Code
 
 
 # 包含头文件目录
-# target_include_directories()
 include_directories(inc)
 
 # 构建库目标
