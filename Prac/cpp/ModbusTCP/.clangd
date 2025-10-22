@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: [
+    -I/home/shins0u/Desktop/Notes/Prac/cpp/ModbusTCP/src,
+  ]
