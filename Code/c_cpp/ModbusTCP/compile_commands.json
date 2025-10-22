@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP",
+  "command": "/usr/bin/c++  -I/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/inc -std=gnu++17 -fPIC -o CMakeFiles/mylib.dir/src/modbusTCP.cpp.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/src/modbusTCP.cpp",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/src/modbusTCP.cpp",
+  "output": "CMakeFiles/mylib.dir/src/modbusTCP.cpp.o"
+},
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP",
+  "command": "/usr/bin/c++  -I/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/inc -std=gnu++17 -fPIE -o CMakeFiles/filename_to_run.dir/src/example.cpp.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/src/example.cpp",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusTCP/src/example.cpp",
+  "output": "CMakeFiles/filename_to_run.dir/src/example.cpp.o"
+}
+]
