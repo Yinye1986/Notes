@@ -1,5 +1,3 @@
-# 数据分析及可视化课程笔记
-
 # 使用DAV
 ```shell
 python -m venv .venv

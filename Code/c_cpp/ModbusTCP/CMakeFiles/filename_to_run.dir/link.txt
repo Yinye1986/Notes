@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/filename_to_run.dir/link.d CMakeFiles/filename_to_run.dir/src/example.cpp.o -o filename_to_run  libmylib.a
