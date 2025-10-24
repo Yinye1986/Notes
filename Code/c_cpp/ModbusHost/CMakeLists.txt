@@ -1,5 +1,5 @@
 # 最小版本要求
-cmake_minimum_required(VERSION 3.10) # 强制要求 CMake 版本在 3.10 及以上
+cmake_minimum_required(VERSION 4.1.1) # 强制要求 CMake 版本在 3.10 及以上
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # 生成compile_commands.json
 # 设置通用编译选项
 set(CMAKE_CXX_STANDARD 23) # 告诉编译器使用 C++23 语言特性。
