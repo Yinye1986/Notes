@@ -6,6 +6,8 @@ hcz::modbusTCP
 # 使用
 
 ```shell
+mkdir build
+cd build
 cmake ..
 make
 ```
