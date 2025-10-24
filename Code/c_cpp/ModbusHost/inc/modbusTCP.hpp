@@ -1,9 +1,9 @@
 #pragma once
 
 #include <arpa/inet.h>
+#include <cerrno>
 #include <cstdint>
 #include <cstring>
-#include <errno.h>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
