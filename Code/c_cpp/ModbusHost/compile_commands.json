@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/build",
+  "command": "/usr/bin/c++  -I/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/inc -std=gnu++23 -fPIC -o CMakeFiles/mystaticlib.dir/src/modbus_tcp_frame.cpp.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/modbus_tcp_frame.cpp",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/modbus_tcp_frame.cpp",
+  "output": "CMakeFiles/mystaticlib.dir/src/modbus_tcp_frame.cpp.o"
+},
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/build",
+  "command": "/usr/bin/c++ -Dmysharedlib_EXPORTS -I/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/inc -std=gnu++23 -fPIC -o CMakeFiles/mysharedlib.dir/src/modbus_tcp_frame.cpp.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/modbus_tcp_frame.cpp",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/modbus_tcp_frame.cpp",
+  "output": "CMakeFiles/mysharedlib.dir/src/modbus_tcp_frame.cpp.o"
+},
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/build",
+  "command": "/usr/bin/c++  -I/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/inc -std=gnu++23 -fPIE -o CMakeFiles/filename_to_run.dir/src/test_tcp.cpp.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/test_tcp.cpp",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/ModbusHost/src/test_tcp.cpp",
+  "output": "CMakeFiles/filename_to_run.dir/src/test_tcp.cpp.o"
+}
+]
