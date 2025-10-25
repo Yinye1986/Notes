@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <initializer_list>
 #include <vector>
 
 namespace modbustcp {
@@ -47,10 +48,10 @@ public:
   // 0x05 写: Q 区 单个
   static ModbusTcpFrame BuildWriteSingleCoilRequest(uint16_t transaction_id,
                                                     uint16_t address,
-                                                    bool value,
+                                                    bool is_true,
                                                     uint8_t unit_id = 0x01);
   // 0x06 写: MW区 单个
-  static ModbusTcpFrame BuildWriteSingleRegisterRequest(uint16_t transactionId,
+  static ModbusTcpFrame BuildWriteSingleRegisterRequest(uint16_t transaction_id,
                                                         uint16_t address,
                                                         uint16_t value,
                                                         uint8_t unit_id = 0x01);
@@ -59,7 +60,9 @@ public:
       uint16_t transactionId, uint16_t startAddress, uint16_t quantity,
       std::initializer_list<uint8_t> args, uint8_t unit_id = 0x01);
   // 0x10 写: MW区 quantity: 字数
-  static ModbusTcpFrame BuildWriteMultipleRegistersRequest();
+  static ModbusTcpFrame BuildWriteMultipleRegistersRequest(
+      uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
+      std::initializer_list<uint8_t> args, uint8_t unit_id = 0x01);
 
 private:
   BuildFrame() = delete;

@@ -1,7 +1,10 @@
 #include "modbus_tcp_frame.hpp"
 
+#include <cstdint>
+#include <initializer_list>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 
 using namespace modbustcp;
 
@@ -42,13 +45,12 @@ ModbusTcpFrame::ModbusTcpFrame(uint16_t transaction_id, uint8_t unit_id,
       function_code_(function_code) {}
 
 // BuildFrame类成员函数实现
-// 01
-// 02
-ModbusTcpFrame
-BuildFrame::BuildReadDiscreteInputsRequset(uint16_t transaction_id,
-                                           uint16_t start_address,
-                                           uint16_t quantity, uint8_t unit_id) {
-  ModbusTcpFrame frame(transaction_id, unit_id, 0x02);
+ModbusTcpFrame BuildFrame::BuildReadCoilRequest(uint16_t transaction_id,
+                                                uint16_t start_address,
+                                                uint16_t quantity,
+                                                uint8_t unit_id) {
+  ModbusTcpFrame frame(transaction_id, unit_id, 0x01);
+  frame.data_.reserve(4);
   frame.data_.push_back((start_address >> 8) & 0xFF);
   frame.data_.push_back(start_address & 0xFF);
   frame.data_.push_back((quantity >> 8) & 0xFF);
@@ -56,30 +58,51 @@ BuildFrame::BuildReadDiscreteInputsRequset(uint16_t transaction_id,
   frame.length_ = 2 + frame.data_.size();
   return frame;
 }
-// 03
+ModbusTcpFrame
+BuildFrame::BuildReadDiscreteInputsRequset(uint16_t transaction_id,
+                                           uint16_t start_address,
+                                           uint16_t quantity, uint8_t unit_id) {
+  ModbusTcpFrame frame(transaction_id, unit_id, 0x02);
+  frame.data_.reserve(4);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  frame.length_ = 2 + frame.data_.size();
+  return frame;
+}
 ModbusTcpFrame BuildFrame::BuildReadHoldingRegistersRequest(
     uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
     uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x03);
-  frame.data_.push_back(
-      (start_address >> 8) &
-      0xFF); // 先右移丟棄低位，再按位與，確保高八位被丟棄(爲防止算數右移)
-  frame.data_.push_back(start_address & 0xFF);   // 低字节
-  frame.data_.push_back((quantity >> 8) & 0xFF); // 高字节
-  frame.data_.push_back(quantity & 0xFF);        // 低字节
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
   frame.length_ = 2 + frame.data_.size();
   return frame;
 }
-// 04
-// 05
+ModbusTcpFrame
+BuildFrame::BuildReadInputRegistersRequest(uint16_t transaction_id,
+                                           uint16_t start_address,
+                                           uint16_t quantity, uint8_t unit_id) {
+  ModbusTcpFrame frame(transaction_id, unit_id, 0x04);
+  frame.data_.reserve(4);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  frame.length_ = 2 + frame.data_.size();
+  return frame;
+}
 ModbusTcpFrame BuildFrame::BuildWriteSingleCoilRequest(uint16_t transaction_id,
                                                        uint16_t address,
-                                                       bool value,
+                                                       bool is_true,
                                                        uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x05);
   frame.data_.push_back((address >> 8) & 0xFF);
   frame.data_.push_back(address & 0xFF);
-  if (value == 1) {
+  if (is_true == 1) {
     frame.data_.push_back(0xFF);
     frame.data_.push_back(0x00);
   } else {
@@ -89,8 +112,6 @@ ModbusTcpFrame BuildFrame::BuildWriteSingleCoilRequest(uint16_t transaction_id,
   frame.length_ = 2 + frame.data_.size();
   return frame;
 }
-
-// 06
 ModbusTcpFrame
 BuildFrame::BuildWriteSingleRegisterRequest(uint16_t transaction_id,
                                             uint16_t address, uint16_t value,
@@ -103,8 +124,6 @@ BuildFrame::BuildWriteSingleRegisterRequest(uint16_t transaction_id,
   frame.length_ = 2 + frame.data_.size();
   return frame;
 }
-
-// 0f
 ModbusTcpFrame BuildFrame::BuildWriteMultipleCoilsRequest(
     uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
     std::initializer_list<uint8_t> args, uint8_t unit_id) {
@@ -117,8 +136,19 @@ ModbusTcpFrame BuildFrame::BuildWriteMultipleCoilsRequest(
   frame.length_ = 2 + frame.data_.size();
   return frame;
 }
-// 10
-
+ModbusTcpFrame BuildFrame::BuildWriteMultipleRegistersRequest(
+    uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
+    std::initializer_list<uint8_t> args, uint8_t unit_id) {
+  ModbusTcpFrame frame(transaction_id, unit_id, 0x10);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  frame.data_.push_back(quantity * 2);
+  frame.data_.insert(frame.data_.end(), args.begin(), args.end());
+  frame.length_ = 2 + frame.data_.size();
+  return frame;
+}
 
 void modbustcp::printFrame(const ModbusTcpFrame &frame) {
   if (!frame.data_.empty()) {
