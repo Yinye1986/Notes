@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <initializer_list>
 #include <vector>
+#include <initializer_list>
 
 namespace modbusrtu {
 
