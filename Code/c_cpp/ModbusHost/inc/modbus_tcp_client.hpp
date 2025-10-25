@@ -1,36 +1,23 @@
 #pragma once
 
-#include "modbus_tcp_client.hpp"
 #include "modbus_tcp_frame.hpp"
-#include <string>
 
-namespace modbustcp {
+#include <string>
 
 class ModbusTcpClient {
 public:
-  /**
-   * @brief 构造函数
-   * @param ip 服务器 IP 地址
-   * @param port 服务器端口 (Modbus TCP 默认为 502)
-   */
   ModbusTcpClient(const std::string &ip, int port = 502);
   ~ModbusTcpClient();
+  bool connectToServer();
+  void closeConnection();
+  bool sendRequest(const modbustcp::ModbusTcpFrame &frame);
+  modbustcp::ModbusTcpFrame readResponse();
 
-  bool Connect(const std::string &ip, int port);
-  void Disconnect();
-
-  bool SendFrame();
-  bool RecvFrame(ModbusTcpFrame &frame);
-
-  bool IsConnected() const;
+  bool isConnected() const;
 
 private:
-  int socket_fd_;
-  bool connected_;
-  std::string ip_;
-  int port_;
-
-  bool InitializeSocket();
+  std::string server_ip_;
+  int server_port_;
+  int sock_fd_;
+  bool is_connected_;
 };
-
-} // namespace modbustcp
