@@ -75,6 +75,7 @@ ModbusTcpFrame BuildFrame::BuildReadHoldingRegistersRequest(
     uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
     uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x03);
+  frame.data_.reserve(4);
   frame.data_.push_back((start_address >> 8) & 0xFF);
   frame.data_.push_back(start_address & 0xFF);
   frame.data_.push_back((quantity >> 8) & 0xFF);
@@ -100,6 +101,7 @@ ModbusTcpFrame BuildFrame::BuildWriteSingleCoilRequest(uint16_t transaction_id,
                                                        bool is_true,
                                                        uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x05);
+  frame.data_.reserve(4);
   frame.data_.push_back((address >> 8) & 0xFF);
   frame.data_.push_back(address & 0xFF);
   if (is_true == 1) {
@@ -117,6 +119,7 @@ BuildFrame::BuildWriteSingleRegisterRequest(uint16_t transaction_id,
                                             uint16_t address, uint16_t value,
                                             uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x06);
+  frame.data_.reserve(4);
   frame.data_.push_back((address >> 8) & 0xFF);
   frame.data_.push_back(address & 0xFF);
   frame.data_.push_back((value >> 8) & 0xFF);
@@ -128,6 +131,7 @@ ModbusTcpFrame BuildFrame::BuildWriteMultipleCoilsRequest(
     uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
     std::initializer_list<uint8_t> args, uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x0F);
+  frame.data_.reserve(4 + args.size());
   frame.data_.push_back((start_address >> 8) & 0xFF);
   frame.data_.push_back(start_address & 0xFF);
   frame.data_.push_back((quantity >> 8) & 0xFF);
@@ -140,6 +144,7 @@ ModbusTcpFrame BuildFrame::BuildWriteMultipleRegistersRequest(
     uint16_t transaction_id, uint16_t start_address, uint16_t quantity,
     std::initializer_list<uint8_t> args, uint8_t unit_id) {
   ModbusTcpFrame frame(transaction_id, unit_id, 0x10);
+  frame.data_.reserve(5 + args.size());
   frame.data_.push_back((start_address >> 8) & 0xFF);
   frame.data_.push_back(start_address & 0xFF);
   frame.data_.push_back((quantity >> 8) & 0xFF);

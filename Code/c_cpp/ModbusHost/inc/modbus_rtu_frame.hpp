@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <initializer_list>
 #include <vector>
 
 namespace modbusrtu {
@@ -11,6 +12,7 @@ struct ModbusRtuFrame {
   std::vector<uint8_t> data_; // 数据
   uint16_t getCrc16() const;
   std::vector<uint8_t> toBytes() const;
+  ModbusRtuFrame() = default;
   ModbusRtuFrame(uint8_t slave_id,
                  uint8_t function_code); // Constructor Overloading
 };
@@ -18,35 +20,38 @@ struct ModbusRtuFrame {
 class BuildFrame {
 public:
   // 0x01
-  static ModbusRtuFrame BuildReadCoilRequest(uint16_t slave_id,
+  static ModbusRtuFrame BuildReadCoilRequest(uint8_t slave_id,
                                              uint16_t start_address,
                                              uint16_t quantity);
   // 0x02
-  static ModbusRtuFrame BuildReadDiscreteInputsRequset(uint16_t slave_id,
+  static ModbusRtuFrame BuildReadDiscreteInputsRequset(uint8_t slave_id,
                                                        uint16_t start_address,
                                                        uint16_t quantity);
   // 0x03
-  static ModbusRtuFrame BuildReadHoldingRegistersRequest(uint16_t slave_id,
+  static ModbusRtuFrame BuildReadHoldingRegistersRequest(uint8_t slave_id,
                                                          uint16_t start_address,
                                                          uint16_t quantity);
   // 0x04
-  static ModbusRtuFrame BuildReadInputRegistersRequest(uint16_t slave_id,
+  static ModbusRtuFrame BuildReadInputRegistersRequest(uint8_t slave_id,
                                                        uint16_t start_address,
                                                        uint16_t quantity);
   // 0x05
   static ModbusRtuFrame
-  BuildWriteSingleCoilRequest(uint16_t slave_id, uint16_t address, bool value);
+  BuildWriteSingleCoilRequest(uint8_t slave_id, uint16_t address, bool is_true);
   // 0x06
-  static ModbusRtuFrame BuildWriteSingleRegisterRequest(uint16_t slave_id,
+  static ModbusRtuFrame BuildWriteSingleRegisterRequest(uint8_t slave_id,
                                                         uint16_t address,
                                                         uint16_t value);
   // 0x0f
   static ModbusRtuFrame
-  BuildWriteMultipleCoilsRequest(uint16_t slave_id, uint16_t start_address,
+  BuildWriteMultipleCoilsRequest(uint8_t slave_id, uint16_t start_address,
                                  uint16_t quantity,
                                  std::initializer_list<uint8_t> args);
   // 0x10
-  static ModbusRtuFrame BuildWriteMultipleRegistersRequest();
+  static ModbusRtuFrame
+  BuildWriteMultipleRegistersRequest(uint8_t slave_id, uint16_t start_address,
+                                     uint16_t quantity,
+                                     std::initializer_list<uint8_t> args);
 
 private:
   BuildFrame() = delete;

@@ -2,6 +2,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <ranges>
 
 using namespace modbusrtu;
 
@@ -42,13 +43,23 @@ ModbusRtuFrame::ModbusRtuFrame(uint8_t slave_id, uint8_t function_code)
     : slave_id_(slave_id), function_code_(function_code) {}
 
 // 01
-// ModbusRtuFrame BuildFrame::BuildReadCoilRequest(uint16_t slave_id,
-//                                                 uint16_t start_address,
-//                                                 uint16_t quantity) {}
+ModbusRtuFrame BuildFrame::BuildReadCoilRequest(uint8_t slave_id,
+                                                uint16_t start_address,
+                                                uint16_t quantity) {
 
-// 02
+  ModbusRtuFrame frame(slave_id, 0x01);
+  frame.data_.reserve(6);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
 ModbusRtuFrame BuildFrame::BuildReadDiscreteInputsRequset(
-    uint16_t slave_id, uint16_t start_address, uint16_t quantity) {
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
   ModbusRtuFrame frame(slave_id, 0x02);
   frame.data_.reserve(6);
   frame.data_.push_back((start_address >> 8) & 0xFF);
@@ -60,7 +71,96 @@ ModbusRtuFrame BuildFrame::BuildReadDiscreteInputsRequset(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-
+ModbusRtuFrame BuildFrame::BuildReadHoldingRegistersRequest(
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
+  ModbusRtuFrame frame(slave_id, 0x03);
+  frame.data_.reserve(6);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
+ModbusRtuFrame BuildFrame::BuildReadInputRegistersRequest(
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
+  ModbusRtuFrame frame(slave_id, 0x04);
+  frame.data_.reserve(6);
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
+ModbusRtuFrame BuildFrame::BuildWriteSingleCoilRequest(uint8_t slave_id,
+                                                       uint16_t address,
+                                                       bool is_true) {
+  ModbusRtuFrame frame(slave_id, 0x05);
+  frame.data_.reserve(6);
+  frame.data_.push_back((address >> 8) & 0xFF);
+  frame.data_.push_back(address & 0xFF);
+  if (is_true == 1) {
+    frame.data_.push_back(0xFF);
+    frame.data_.push_back(0x00);
+  } else {
+    frame.data_.push_back(0x00);
+    frame.data_.push_back(0x00);
+  }
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
+ModbusRtuFrame BuildFrame::BuildWriteSingleRegisterRequest(uint8_t slave_id,
+                                                           uint16_t address,
+                                                           uint16_t value) {
+  ModbusRtuFrame frame(slave_id, 0x06);
+  frame.data_.reserve(6);
+  frame.data_.push_back((address >> 8) & 0xFF);
+  frame.data_.push_back(address & 0xFF);
+  frame.data_.push_back((value >> 8) & 0xFF);
+  frame.data_.push_back(value & 0xFF);
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
+ModbusRtuFrame BuildFrame::BuildWriteMultipleCoilsRequest(
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity,
+    std::initializer_list<uint8_t> args) {
+  ModbusRtuFrame frame(slave_id, 0x0f);
+  frame.data_.reserve(6+args.size());
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  frame.data_.insert(frame.data_.end(), args.begin(), args.end());
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
+ModbusRtuFrame BuildFrame::BuildWriteMultipleRegistersRequest(
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity,
+    std::initializer_list<uint8_t> args) {
+  ModbusRtuFrame frame(slave_id, 0x10);
+  frame.data_.reserve(7 + args.size());
+  frame.data_.push_back((start_address >> 8) & 0xFF);
+  frame.data_.push_back(start_address & 0xFF);
+  frame.data_.push_back((quantity >> 8) & 0xFF);
+  frame.data_.push_back(quantity & 0xFF);
+  frame.data_.push_back(quantity * 2);
+  frame.data_.insert(frame.data_.end(), args.begin(), args.end());
+  uint16_t crc = frame.getCrc16();
+  frame.data_.push_back(crc & 0xFF);
+  frame.data_.push_back((crc >> 8) & 0xFF);
+  return frame;
+}
 void modbusrtu::printFrame(const ModbusRtuFrame &frame) {
   if (!frame.data_.empty()) {
     std::vector<uint8_t> vec = frame.toBytes();
