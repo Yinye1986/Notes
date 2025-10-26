@@ -19,9 +19,9 @@ set(INC_DIRS
 )
 
 set(LIB_STATIC "mystaticlib")
-set(LIB_STATIC "mysharedlib")
+set(LIB_SHARED "mysharedlib")
 set(LIB_SOURCES
-  src/modbusSlave.c
+  src/over_tcp.c
 )
 
 add_library(${LIB_STATIC} STATIC ${LIB_SOURCES})
