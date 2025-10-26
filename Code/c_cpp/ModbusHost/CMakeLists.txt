@@ -18,7 +18,7 @@ set(INC_DIRS
 
 set(LIB_STATIC mystaticlib)
 set(LIB_SHARED mysharedlib)
-set(LIB_SOURCES src/modbus_tcp_frame.cpp)
+set(LIB_SOURCES src/modbus_tcp_frame.cpp src/modbus_tcp_client.cpp)
 
 add_library(${LIB_STATIC} STATIC ${LIB_SOURCES})
 target_include_directories(${LIB_STATIC} PUBLIC ${INC_DIRS})
@@ -27,6 +27,6 @@ add_library(${LIB_SHARED} SHARED ${LIB_SOURCES})
 target_include_directories(${LIB_SHARED} PUBLIC ${INC_DIRS})
 
 set(EXE_NAME filename_to_run)
-set(EXE_SOURCE src/test_tcp.cpp)
+set(EXE_SOURCE src/main.cpp)
 add_executable(${EXE_NAME} ${EXE_SOURCE})
 target_link_libraries(${EXE_NAME} PRIVATE ${LIB_STATIC})

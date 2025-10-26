@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <vector>
 #include <initializer_list>
+#include <vector>
 
 namespace modbusrtu {
 
@@ -12,6 +12,7 @@ struct ModbusRtuFrame {
   std::vector<uint8_t> data_; // 数据
   uint16_t getCrc16() const;
   std::vector<uint8_t> toBytes() const;
+  static ModbusRtuFrame fromBytes(const std::vector<uint8_t> &bytes);
   ModbusRtuFrame() = default;
   ModbusRtuFrame(uint8_t slave_id,
                  uint8_t function_code); // Constructor Overloading

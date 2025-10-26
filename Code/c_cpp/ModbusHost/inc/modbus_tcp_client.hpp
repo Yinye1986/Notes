@@ -8,10 +8,10 @@ class ModbusTcpClient {
 public:
   ModbusTcpClient(const std::string &ip, int port = 502);
   ~ModbusTcpClient();
-  bool connectToServer();
-  void closeConnection();
-  bool sendRequest(const modbustcp::ModbusTcpFrame &frame);
-  modbustcp::ModbusTcpFrame readResponse();
+  bool Connect();
+  void Close();
+  bool Send(const modbustcp::ModbusTcpFrame &frame);
+  modbustcp::ModbusTcpFrame Recv();
 
   bool isConnected() const;
 

@@ -1,6 +1,7 @@
 #include "modbus_tcp_frame.hpp"
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 using namespace modbustcp;
 
@@ -36,4 +37,9 @@ int main() {
       8, 8, 2, {0xFF, 0xFF, 0xFF, 0xFF});
   printFrame(example16);
   std::cout << std::endl;
+
+  std::vector<uint8_t> bytes = example16.toBytes();
+  ModbusTcpFrame example114 = ModbusTcpFrame::fromBytes(bytes);
+  printFrame(example114);
+
 }

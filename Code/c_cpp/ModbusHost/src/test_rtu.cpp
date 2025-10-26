@@ -1,6 +1,7 @@
 #include "modbus_rtu_frame.hpp"
 
 #include <iostream>
+#include <vector>
 
 using namespace modbusrtu;
 
@@ -36,4 +37,8 @@ int main() {
       8, 8, 2, {0xFF, 0xFF, 0xFF, 0xFF});
   printFrame(example16);
   std::cout << std::endl;
+
+  std::vector<uint8_t> b = example16.toBytes();
+  ModbusRtuFrame example114 = ModbusRtuFrame::fromBytes(b);
+  printFrame(example114);
 }

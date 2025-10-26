@@ -2,11 +2,9 @@
 
 #include <iomanip>
 #include <iostream>
-#include <ranges>
+#include <vector>
 
-using namespace modbusrtu;
-
-uint16_t ModbusRtuFrame::getCrc16() const {
+uint16_t modbusrtu::ModbusRtuFrame::getCrc16() const {
   uint16_t crc = 0xFFFF;
   const uint16_t poly = 0xA001;
   std::vector<uint8_t> frame;
@@ -29,23 +27,32 @@ uint16_t ModbusRtuFrame::getCrc16() const {
   return crc;
 };
 
-std::vector<uint8_t> ModbusRtuFrame::toBytes() const {
+std::vector<uint8_t> modbusrtu::ModbusRtuFrame::toBytes() const {
   std::vector<uint8_t> bytes;
   bytes.reserve(2 + this->data_.size());
-  ;
   bytes.push_back(this->slave_id_);
   bytes.push_back(this->function_code_);
   bytes.insert(bytes.end(), this->data_.begin(), this->data_.end());
   return bytes;
 }
 
-ModbusRtuFrame::ModbusRtuFrame(uint8_t slave_id, uint8_t function_code)
+modbusrtu::ModbusRtuFrame
+modbusrtu::ModbusRtuFrame::fromBytes(const std::vector<uint8_t> &bytes) {
+  ModbusRtuFrame frame;
+  frame.data_.reserve(bytes.size() - 2);
+  frame.slave_id_ = bytes[0];
+  frame.function_code_ = bytes[1];
+  frame.data_.assign(bytes.begin() + 2, bytes.end());
+  return frame;
+}
+
+modbusrtu::ModbusRtuFrame::ModbusRtuFrame(uint8_t slave_id,
+                                          uint8_t function_code)
     : slave_id_(slave_id), function_code_(function_code) {}
 
 // 01
-ModbusRtuFrame BuildFrame::BuildReadCoilRequest(uint8_t slave_id,
-                                                uint16_t start_address,
-                                                uint16_t quantity) {
+modbusrtu::ModbusRtuFrame modbusrtu::BuildFrame::BuildReadCoilRequest(
+    uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
 
   ModbusRtuFrame frame(slave_id, 0x01);
   frame.data_.reserve(6);
@@ -58,7 +65,7 @@ ModbusRtuFrame BuildFrame::BuildReadCoilRequest(uint8_t slave_id,
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildReadDiscreteInputsRequset(
+modbusrtu::ModbusRtuFrame modbusrtu::BuildFrame::BuildReadDiscreteInputsRequset(
     uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
   ModbusRtuFrame frame(slave_id, 0x02);
   frame.data_.reserve(6);
@@ -71,8 +78,10 @@ ModbusRtuFrame BuildFrame::BuildReadDiscreteInputsRequset(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildReadHoldingRegistersRequest(
-    uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
+modbusrtu::ModbusRtuFrame
+modbusrtu::BuildFrame::BuildReadHoldingRegistersRequest(uint8_t slave_id,
+                                                        uint16_t start_address,
+                                                        uint16_t quantity) {
   ModbusRtuFrame frame(slave_id, 0x03);
   frame.data_.reserve(6);
   frame.data_.push_back((start_address >> 8) & 0xFF);
@@ -84,7 +93,7 @@ ModbusRtuFrame BuildFrame::BuildReadHoldingRegistersRequest(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildReadInputRegistersRequest(
+modbusrtu::ModbusRtuFrame modbusrtu::BuildFrame::BuildReadInputRegistersRequest(
     uint8_t slave_id, uint16_t start_address, uint16_t quantity) {
   ModbusRtuFrame frame(slave_id, 0x04);
   frame.data_.reserve(6);
@@ -97,9 +106,8 @@ ModbusRtuFrame BuildFrame::BuildReadInputRegistersRequest(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildWriteSingleCoilRequest(uint8_t slave_id,
-                                                       uint16_t address,
-                                                       bool is_true) {
+modbusrtu::ModbusRtuFrame modbusrtu::BuildFrame::BuildWriteSingleCoilRequest(
+    uint8_t slave_id, uint16_t address, bool is_true) {
   ModbusRtuFrame frame(slave_id, 0x05);
   frame.data_.reserve(6);
   frame.data_.push_back((address >> 8) & 0xFF);
@@ -116,9 +124,10 @@ ModbusRtuFrame BuildFrame::BuildWriteSingleCoilRequest(uint8_t slave_id,
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildWriteSingleRegisterRequest(uint8_t slave_id,
-                                                           uint16_t address,
-                                                           uint16_t value) {
+modbusrtu::ModbusRtuFrame
+modbusrtu::BuildFrame::BuildWriteSingleRegisterRequest(uint8_t slave_id,
+                                                       uint16_t address,
+                                                       uint16_t value) {
   ModbusRtuFrame frame(slave_id, 0x06);
   frame.data_.reserve(6);
   frame.data_.push_back((address >> 8) & 0xFF);
@@ -130,11 +139,11 @@ ModbusRtuFrame BuildFrame::BuildWriteSingleRegisterRequest(uint8_t slave_id,
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildWriteMultipleCoilsRequest(
+modbusrtu::ModbusRtuFrame modbusrtu::BuildFrame::BuildWriteMultipleCoilsRequest(
     uint8_t slave_id, uint16_t start_address, uint16_t quantity,
     std::initializer_list<uint8_t> args) {
   ModbusRtuFrame frame(slave_id, 0x0f);
-  frame.data_.reserve(6+args.size());
+  frame.data_.reserve(6 + args.size());
   frame.data_.push_back((start_address >> 8) & 0xFF);
   frame.data_.push_back(start_address & 0xFF);
   frame.data_.push_back((quantity >> 8) & 0xFF);
@@ -145,7 +154,8 @@ ModbusRtuFrame BuildFrame::BuildWriteMultipleCoilsRequest(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-ModbusRtuFrame BuildFrame::BuildWriteMultipleRegistersRequest(
+modbusrtu::ModbusRtuFrame
+modbusrtu::BuildFrame::BuildWriteMultipleRegistersRequest(
     uint8_t slave_id, uint16_t start_address, uint16_t quantity,
     std::initializer_list<uint8_t> args) {
   ModbusRtuFrame frame(slave_id, 0x10);
@@ -161,7 +171,7 @@ ModbusRtuFrame BuildFrame::BuildWriteMultipleRegistersRequest(
   frame.data_.push_back((crc >> 8) & 0xFF);
   return frame;
 }
-void modbusrtu::printFrame(const ModbusRtuFrame &frame) {
+void modbusrtu::printFrame(const modbusrtu::ModbusRtuFrame &frame) {
   if (!frame.data_.empty()) {
     std::vector<uint8_t> vec = frame.toBytes();
     for (size_t i = 0; i < vec.size(); ++i) {

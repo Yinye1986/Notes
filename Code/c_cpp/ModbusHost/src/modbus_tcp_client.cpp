@@ -1,6 +1,6 @@
 #include "modbus_tcp_client.hpp"
-#include <arpa/inet.h>  // inet_pton
-#include <cstring>      // memset
+#include <arpa/inet.h> // inet_pton
+#include <cstring>     // memset
 #include <iostream>
 #include <sys/socket.h> // socket, connect, send, recv
 #include <unistd.h>     // close
@@ -9,9 +9,9 @@
 ModbusTcpClient::ModbusTcpClient(const std::string &ip, int port)
     : server_ip_(ip), server_port_(port), sock_fd_(-1), is_connected_(false) {}
 
-ModbusTcpClient::~ModbusTcpClient() { this->closeConnection(); }
+ModbusTcpClient::~ModbusTcpClient() { this->Close(); }
 
-void ModbusTcpClient::closeConnection() {
+void ModbusTcpClient::Close() {
   if (is_connected_) {
     close(sock_fd_);
     is_connected_ = false;
@@ -20,18 +20,15 @@ void ModbusTcpClient::closeConnection() {
   }
 }
 
-bool ModbusTcpClient::connectToServer() {
+bool ModbusTcpClient::Connect() {
   if (is_connected_) {
     std::cerr << "Already connected." << std::endl;
     return true;
   }
 
-  // 1. 创建 socket
-  // AF_INET: IPv4
-  // SOCK_STREAM: TCP
   sock_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (sock_fd_ < 0) {
-    perror("socket() failed");
+    std::cerr << "Failed to create socket." << std::endl;
     return false;
   }
 
@@ -44,16 +41,14 @@ bool ModbusTcpClient::connectToServer() {
   // 3. 将 IP 地址字符串转换为网络格式
   // inet_pton: "presentation to network"
   if (inet_pton(AF_INET, server_ip_.c_str(), &serv_addr.sin_addr) <= 0) {
-    perror("inet_pton() failed");
+    std::cerr << "inet_pton() failed" << std::endl;
     close(sock_fd_);
     sock_fd_ = -1;
     return false;
   }
 
-  // 4. 连接到服务器
-  // connect() 是一个阻塞调用
   if (connect(sock_fd_, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    perror("connect() failed");
+    std::cerr << "connect() failed" << std::endl;
     close(sock_fd_);
     sock_fd_ = -1;
     return false;
@@ -65,7 +60,7 @@ bool ModbusTcpClient::connectToServer() {
   return true;
 }
 
-bool ModbusTcpClient::sendRequest(const modbustcp::ModbusTcpFrame &frame) {
+bool ModbusTcpClient::Send(const modbustcp::ModbusTcpFrame &frame) {
   if (!is_connected_) {
     std::cerr << "Not connected." << std::endl;
     return false;
@@ -76,8 +71,8 @@ bool ModbusTcpClient::sendRequest(const modbustcp::ModbusTcpFrame &frame) {
       send(sock_fd_, bytes_to_send.data(), bytes_to_send.size(), 0);
 
   if (bytes_sent < 0) {
-    perror("send() failed");
-    closeConnection(); // 发送失败，可能连接已断开
+    std::cerr << "send() failed" << std::endl;
+    Close(); // 发送失败，可能连接已断开
     return false;
   }
 
@@ -89,7 +84,7 @@ bool ModbusTcpClient::sendRequest(const modbustcp::ModbusTcpFrame &frame) {
   return true;
 }
 
-modbustcp::ModbusTcpFrame ModbusTcpClient::readResponse() {
+modbustcp::ModbusTcpFrame ModbusTcpClient::Recv() {
   if (!is_connected_) {
     std::cerr << "Not connected." << std::endl;
     return modbustcp::ModbusTcpFrame(); // 返回空
@@ -99,9 +94,9 @@ modbustcp::ModbusTcpFrame ModbusTcpClient::readResponse() {
   unsigned char mbap_header[6];
   ssize_t bytes_read = 0;
 
-  // 1. 读取固定的 6 字节 MBAP 头
-  //    (Transaction ID, Protocol ID, Length)
-  //    我们使用 MSG_WAITALL 来确保读满 6 字节再返回
+  // 读取固定的 6 字节 MBAP 头
+  // (Transaction ID, Protocol ID, Length)
+  // 使用 MSG_WAITALL 来确保读满 6 字节再返回
   bytes_read = recv(sock_fd_, mbap_header, 6, MSG_WAITALL);
 
   if (bytes_read <= 0) {
@@ -110,7 +105,7 @@ modbustcp::ModbusTcpFrame ModbusTcpClient::readResponse() {
     } else {
       perror("recv() header failed");
     }
-    closeConnection();
+    Close();
     return modbustcp::ModbusTcpFrame();
   }
 
@@ -123,24 +118,26 @@ modbustcp::ModbusTcpFrame ModbusTcpClient::readResponse() {
     return modbustcp::ModbusTcpFrame();
   }
   if (pdu_length > 256) { // PDU (UnitID + Func + Data) 最大 1 + 1 + 253 = 255
-      std::cerr << "PDU length too large: " << pdu_length << std::endl;
-      // 仍然尝试读取，以清空缓冲区，但可能出错
+    std::cerr << "PDU length too large: " << pdu_length << std::endl;
+    // 仍然尝试读取，以清空缓冲区，但可能出错
   }
 
   // 3. 准备接收剩余的 PDU
   std::vector<uint8_t> all_bytes;
-  all_bytes.insert(all_bytes.end(), mbap_header, mbap_header + 6); // 先把头放进去
+  all_bytes.insert(all_bytes.end(), mbap_header,
+                   mbap_header + 6); // 先把头放进去
 
   std::vector<uint8_t> pdu_data(pdu_length);
   bytes_read = recv(sock_fd_, pdu_data.data(), pdu_length, MSG_WAITALL);
 
   if (bytes_read <= 0) {
     if (bytes_read == 0) {
-      std::cerr << "Connection closed by server while reading PDU." << std::endl;
+      std::cerr << "Connection closed by server while reading PDU."
+                << std::endl;
     } else {
       perror("recv() PDU failed");
     }
-    closeConnection();
+    Close();
     return modbustcp::ModbusTcpFrame();
   }
 
@@ -149,10 +146,7 @@ modbustcp::ModbusTcpFrame ModbusTcpClient::readResponse() {
     return modbustcp::ModbusTcpFrame();
   }
 
-  // 4. 组合完整的报文
   all_bytes.insert(all_bytes.end(), pdu_data.begin(), pdu_data.end());
-
-  // 5. 使用你提供的 fromBytes 进行解析
   return modbustcp::ModbusTcpFrame::fromBytes(all_bytes);
 }
 
