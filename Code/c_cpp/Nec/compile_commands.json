@@ -1,0 +1,20 @@
+[
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/build",
+  "command": "/usr/bin/cc  -I/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/inc -Wall -Wextra -pedantic -o CMakeFiles/mystaticlib.dir/src/over_tcp.c.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/over_tcp.c",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/over_tcp.c",
+  "output": "CMakeFiles/mystaticlib.dir/src/over_tcp.c.o"
+},
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/build",
+  "command": "/usr/bin/cc -Dmysharedlib_EXPORTS -I/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/inc -fPIC -Wall -Wextra -pedantic -o CMakeFiles/mysharedlib.dir/src/over_tcp.c.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/over_tcp.c",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/over_tcp.c",
+  "output": "CMakeFiles/mysharedlib.dir/src/over_tcp.c.o"
+},
+{
+  "directory": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/build",
+  "command": "/usr/bin/cc  -I/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/inc -Wall -Wextra -pedantic -g -o CMakeFiles/file_to_run.dir/src/main.c.o -c /home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/main.c",
+  "file": "/home/shins0u/Desktop/Notes/Code/c_cpp/Nec/src/main.c",
+  "output": "CMakeFiles/file_to_run.dir/src/main.c.o"
+}
+]
