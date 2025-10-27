@@ -11,7 +11,7 @@ typedef enum {
     IR_STATE_DONE       // 帧完成
 } ir_state_t;
 
-volatile ir_state_t ir_state;
+extern volatile ir_state_t ir_state;
 volatile uint8_t ir_bit_count;
 volatile uint32_t ir_data; // 32位暂存（addr+cmd）
 volatile bool ir_frame_ready;
