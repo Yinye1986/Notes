@@ -13,6 +13,12 @@
 
 linux下使用无需这么复杂直接编译运行即可, 不过迁移到其他电脑上还是需要先安装libmodbus
 
+windows下需要改一下字符编码
+
+```shell
+chcp 65001
+```
+
 # 附录
 
 libmodbus在windows下的编译
