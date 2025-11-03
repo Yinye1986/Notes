@@ -7,7 +7,6 @@
 #include "nec.h"
 
 void SystemClock_Config(void);
-volatile NecResult_t NecResult;
 int main(void)
 {
   HAL_Init();
@@ -18,8 +17,6 @@ int main(void)
   NEC_Init();
   while (1)
   {
-    HAL_Delay(500);
-    Nec_Protocol_Received();
   }
   /* USER CODE END 3 */
 }
