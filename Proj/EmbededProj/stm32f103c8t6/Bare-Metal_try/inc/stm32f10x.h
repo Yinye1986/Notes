@@ -1,0 +1,15 @@
+#ifndef __STM32F10x_H
+#define __STM32F10x_H
+
+#define PERIPH_BASE     ((uint32_t)0x40000000)
+#define APB1PERIPH_BASE PERIPH_BASE
+#define APB2PERIPH_BASE (PERIPH_BASE + 0x10000)
+#define AHBPERIPH_BASE  (PERIPH_BASE + 0x18000)
+
+#define GPIOA_BASE      (APB2PERIPH_BASE + 0x10800)
+#define RCC_BASE        (AHBPERIPH_BASE + 0x9000)
+
+#define RCC_AHBENR_R
+
+
+#endif
