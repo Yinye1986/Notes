@@ -2,7 +2,7 @@
 
 ## TYPE 1
 
-```C
+```c
 typedef struct {
     int chinese;
     int math;
@@ -18,7 +18,7 @@ score1 score_of_hung;
 
 ## TYPE 2
 
-```C
+```c
 void printScore(struct *) {}
 
 struct score2 {
@@ -36,7 +36,7 @@ struct score2 t1,t2[],*t3 // 通过此语句声明一个结构体变量
 
 ### TYPE 2.1
 
-```C
+```c
 struct score1 {
     int chinese;
     int math;

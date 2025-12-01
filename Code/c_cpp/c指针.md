@@ -30,7 +30,7 @@ pointer = &a; // 此处 &a 就得到了a的地址,所以此时 pointer 的值等
 
 ### 指针指针
 
-```C
+```c
 int a;
 int *pointer1;
 int **pointer2;
