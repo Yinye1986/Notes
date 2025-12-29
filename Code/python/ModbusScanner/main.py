@@ -75,19 +75,5 @@ def main():
     if FOUND_BAUD is None or FOUND_SLAVE is None:
         print("未找到设备, 无法继续操作")
         return
-    # ...
-    # client = ModbusSerialClient(
-    #     port=PORT,
-    #     baudrate=FOUND_BAUD,
-    #     parity=PARITY,
-    #     stopbits=STOPBITS,
-    #     bytesize=BYTESIZE,
-    #     timeout=1,
-    # )
-
-    # if not client.connect():
-    #     print("串口连接失败")
-    #     return
-
 if __name__ == "__main__":
    main()
