@@ -6,44 +6,52 @@
 
 核心组件： U-Boot, Linux Kernel 6.6.y, BusyBox (Static), Initramfs
 
-一、 交叉编译环境准备
-使用 pacman 安装:
+# 交叉编译环境准备
 
-    aarch64-linux-gnu-gcc \ # 包含glibc linux-api-headers binutils
-    base-devel # 包含多种开发工具
+宿主机上安装交叉编译所需的工具链
+
+```shell
+sudo pacman -S aarch64-linux-gnu-gcc \ # 包含glibc linux-api-headers binutils
+    base-devel \ # 包含多种开发工具
     uboot-tools
+```
 
 
-二、 构建 BusyBox 根文件系统 (Rootfs)
+# 构建 BusyBox 根文件系统 (Rootfs)
 
 采用静态编译方案，以摆脱对动态链接库的依赖。
 
-    编译 BusyBox：
-    # 生成空配置文件
+编译 BusyBox:
 
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- allnoconfig
-    # 在 menuconfig 开启需要的条目; 静态编译, 以及一系列需要的命令(INIT ASH LS CAT MOUNT MKDIR UMOUNT VI ...)
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+```shell
+# 生成空配置文件
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- allnoconfig
+# 在 menuconfig 开启需要的条目; 静态编译, 以及一系列需要的命令(INIT ASH LS CAT MOUNT MKDIR UMOUNT VI ...)
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- menuconfig
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+```
 
-    此处有坑 menuconfig 需要宿主机安装 ncurses; 实验环境中有也无效
-    于是手动修改生成的 .config
+此处有坑 menuconfig 需要宿主机安装 ncurses; 实验环境中有也无效
 
-    构建目录结构：
+于是手动修改生成的 .config
 
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CONFIG_PREFIX=./rootfs install
-    mkdir -p rootfs/{etc/init.d,proc,sys,dev,tmp,root}
+构建目录结构：
+```shell
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CONFIG_PREFIX=./rootfs install
+mkdir -p rootfs/{etc/init.d,proc,sys,dev,tmp,root}
+```
 
-    编写核心初始化脚本 (rootfs/etc/init.d/rcS)：
-    ```rcS
-    #!/bin/sh
+编写核心初始化脚本 (rootfs/etc/init.d/rcS)：
 
-    mount -t proc none /proc
-    mount -t sysfs none /sys
-    mount -t tmpfs none /dev
-    echo /sbin/mdev > /proc/sys/kernel/hotplug
-    mdev -s
-    ```
+```shell
+#!/bin/sh
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t tmpfs none /dev
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+```
 
     chmod +x rootfs/etc/init.d/rcS
 
@@ -80,9 +88,9 @@
 四、 构建引导程序 (U-Boot)
 
     编译 U-Boot:
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- rpi_4_defconfig
+    make CROSS_COMPILE=aarch64-linux-gnu- rpi_4_defconfig
 
-    make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+    make CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
 
     产物:u-boot.bin
 
@@ -146,12 +154,12 @@
 
     编写 config.txt：
 
-    ```config.txt
-    arm_64bit=1
-    enable_uart=1
-    kernel=u-boot.bin
+```config.txt
+arm_64bit=1
+enable_uart=1
+kernel=u-boot.bin
 
-    ```
+```
 
 
 六、 实验总结与调试心得
